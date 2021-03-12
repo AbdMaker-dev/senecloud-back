@@ -53,8 +53,8 @@ const getPersonneById = (request, response) => {
   }
 
   const createPersonne = (request, response) => {
-    const { name, email } = request.body
-    pool.query('INSERT INTO personne (name, email, status) VALUES ($1, $2, $3)', [name, email, 'actived'], (error, result) => {
+    const { name, email, status } = request.body
+    pool.query('INSERT INTO personne (name, email, status) VALUES ($1, $2, $3)', [name, email, status], (error, result) => {
       if (error) {
         throw error
       }
@@ -64,7 +64,7 @@ const getPersonneById = (request, response) => {
 
   const updatePersonne = (request, response) => {
     const id = parseInt(request.params.id)
-    const { name, email } = request.body
+    const { name, email, status } = request.body
   
     pool.query(
       'UPDATE personne SET name = $1, email = $2, status = $3 WHERE id = $4',
@@ -86,6 +86,17 @@ const getPersonneById = (request, response) => {
         throw error
       }
       response.status(200).send(`User deleted with ID: ${id}`)
+    })
+  }
+
+  const searchePersonne = (request, response) => {
+    const value = request.params.search
+    // return response.status(200).json(value)
+    pool.query(`SELECT * FROM personne WHERE name LIKE '%`+value+`%' OR email LIKE '%`+value+`'`, (error, results) => {
+      if (error) {
+        throw error
+      }
+      response.status(200).json(results.rows)
     })
   }
 
@@ -114,5 +125,6 @@ module.exports = {
     updatePersonne,
     deletePersonne,
     login,
-    authenticateJWT
+    authenticateJWT,
+    searchePersonne
   }

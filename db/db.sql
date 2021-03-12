@@ -8,5 +8,5 @@ CREATE TABLE personne (id SERIAL PRIMARY KEY, name VARCHAR(30), email VARCHAR(30
 INSERT INTO users (username, password)
   VALUES ('admin', 'passer');
 
-  INSERT INTO personne (name, email, status)
+INSERT INTO personne (name, email, status)
   VALUES ('Alioune Badara Diouf', 'dioufalioune@gmail.com.com', 'actived');
