@@ -1,4 +1,5 @@
 const Pool = require('pg').Pool
+const jwt = require('jsonwebtoken');
 
 const pool = new Pool({
   user: 'alioune',
@@ -27,6 +28,28 @@ const getPersonneById = (request, response) => {
       }
       response.status(200).json(results.rows)
     })
+  }
+
+  const login = (request, response) =>{
+    const { username, password } = request.body;
+    const accessTokenSecret = 'youraccesstokensecret';
+    pool.query('SELECT * FROM users WHERE username = $1 AND password = $2', [username, password], (error, results) => {
+      if (error) {
+        throw error
+      }
+      console.log(results.rows);
+      if (results.rows) {
+        const user = results.rows;
+        // Generation du  un token access
+        const accessToken = jwt.sign({ username: user[0].username}, accessTokenSecret);
+        response.json({
+            accessToken
+        });
+    } else {
+        response.send('Username or password incorrect');
+    }
+
+    });
   }
 
   const createPersonne = (request, response) => {
@@ -66,6 +89,23 @@ const getPersonneById = (request, response) => {
     })
   }
 
+  const authenticateJWT = (request, response, next) => {
+    const authHeader = request.headers.authorization;
+    const accessTokenSecret = 'youraccesstokensecret';
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, accessTokenSecret, (err, user) => {
+            if (err) {
+                return response.sendStatus(403);
+            }
+            request.user = user;
+            next();
+        });
+    } else {
+        response.sendStatus(401);
+    }
+};
+
 
 module.exports = {
     getAllPersonne,
@@ -73,4 +113,6 @@ module.exports = {
     createPersonne,
     updatePersonne,
     deletePersonne,
+    login,
+    authenticateJWT
   }
