@@ -2,10 +2,10 @@ const Pool = require('pg').Pool
 const jwt = require('jsonwebtoken');
 
 const pool = new Pool({
-  user: 'alioune',
+  user: 'your_username',
   host: 'localhost',
   database: 'senecloud',
-  password: 'alioune',
+  password: 'your_password',
   port: 5432,
 });
 
